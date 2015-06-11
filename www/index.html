@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="stylesheet" href="components/loader.css">
+        <script src="components/loader.js"></script>
+        <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <title>加速度センサーの使用</title>
+        <script>
+            var saveX = 0, saveY = 0, saveZ = 0, count = 0;
+            
+            /* $(function(){ ☆ });この☆の中に書かれた処理は、HTMLが読み込まれたときに実行されます。*/
+            /* setIntarvalは、指定時間間隔で処理を連続実行します。今回は40ミリ秒(1000ミリ秒=1秒)で行っています。 */
+            $(function(){
+                setInterval(function(){
+                    /* navigator accelerometerを書くことによって加速度を取得できるようになります。（Device Motionを有効にしてください）*/
+                    /* そしてonSuccessで成功した場合の処理を行い、今回の場合は失敗することはないので失敗の場合はnullにしています。*/
+                    navigator.accelerometer.getCurrentAcceleration(onSuccess, null);
+                },40);
+            });
+            
+            function onSuccess(acceleration) {
+                /* スマホを全力で振った場合(上下に)加速度が19となるので今回は前の値(saveX)から今回の値(acceleration.x)の差が13だった場合カウント(count)を1するようしています。 */
+                if(Math.abs(saveX - acceleration.x) > 13){
+                    //console.log("path" + Math.abs(saveX - acceleration.x));
+                    count++;
+                    saveX = acceleration.x;
+                }
+                /* ここでX,Y,Z軸の加速度を取得し、またタイムスタンプとカウント(振ったときの値)を取得できるようにしています。 */
+                //console.log("succcess" + Math.abs(saveX - acceleration.x));
+                $("#X").html('X 軸における加速度: ' + acceleration.x);
+                $("#Y").html('Y 軸における加速度: ' + acceleration.y);
+                $("#Z").html('Z 軸における加速度: ' + acceleration.z);
+                $("#time").html('タイムスタンプ: ' + acceleration.timestamp);
+                $("#count").html('カウント: ' + Math.floor(count/2));
+            };
+        </script>
+    </head>
+    <body>
+        <p id="X"></p>
+        <p id="Y"></p>
+        <p id="Z"></p>
+        <p id="time"></p>
+        <p id="count"></p>
+    </body>
+</html>
